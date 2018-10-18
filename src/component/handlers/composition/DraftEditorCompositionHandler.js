@@ -45,10 +45,12 @@ const RESOLVE_DELAY = 20;
 let resolved = false;
 let stillComposing = false;
 let textInputData = '';
+let composedChar = '';
 
 const DraftEditorCompositionHandler = {
   onBeforeInput: function(editor: DraftEditor, e: SyntheticInputEvent<>): void {
     textInputData = (textInputData || '') + e.data;
+    composedChar = '';
   },
 
   /**
@@ -76,6 +78,7 @@ const DraftEditorCompositionHandler = {
   onCompositionEnd: function(editor: DraftEditor, e: SyntheticEvent<>): void {
     resolved = false;
     stillComposing = false;
+    composedChar = e.data;
     setTimeout(() => {
       if (!resolved) {
         DraftEditorCompositionHandler.resolveComposition(editor, e);
@@ -89,6 +92,7 @@ const DraftEditorCompositionHandler = {
    * doesn't move, otherwise it will jump back noticeably on re-render.
    */
   onKeyDown: function(editor: DraftEditor, e: SyntheticKeyboardEvent<>): void {
+    composedChar = '';
     if (!stillComposing) {
       // If a keydown event is received after compositionend but before the
       // 20ms timer expires (ex: type option-E then backspace, or type A then
@@ -138,6 +142,10 @@ const DraftEditorCompositionHandler = {
       return;
     }
 
+    if (composedChar) {
+      textInputData += composedChar;
+      composedChar = '';
+    }
     resolved = true;
     const composedChars = textInputData;
     textInputData = '';
