@@ -46,9 +46,11 @@ let resolved = false;
 let stillComposing = false;
 let textInputData = '';
 let composedChar = '';
+let fromKeyboardEvent = false;
 
 const DraftEditorCompositionHandler = {
   onBeforeInput: function(editor: DraftEditor, e: SyntheticInputEvent<>): void {
+    fromKeyboardEvent = true;
     textInputData = (textInputData || '') + e.data;
     composedChar = '';
   },
@@ -78,9 +80,11 @@ const DraftEditorCompositionHandler = {
   onCompositionEnd: function(editor: DraftEditor, e: SyntheticEvent<>): void {
     resolved = false;
     stillComposing = false;
-    composedChar = e.data;
+    if (!fromKeyboardEvent) composedChar = e.data;
+    fromKeyboardEvent = false;
     setTimeout(() => {
       if (!resolved) {
+        composedChar = '';
         DraftEditorCompositionHandler.resolveComposition(editor, e);
       }
     }, RESOLVE_DELAY);
