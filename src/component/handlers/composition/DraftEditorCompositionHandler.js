@@ -84,7 +84,6 @@ const DraftEditorCompositionHandler = {
     fromKeyboardEvent = false;
     setTimeout(() => {
       if (!resolved) {
-        composedChar = '';
         DraftEditorCompositionHandler.resolveComposition(editor, e);
       }
     }, RESOLVE_DELAY);
